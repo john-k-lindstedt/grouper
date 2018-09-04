@@ -4,8 +4,11 @@
 # - SID is now read from listener input 
 # - implemented instructions at startup (just placeholders)
 # - added reminder text to the main task
+# - added a printscreen function
 
 # todo:
+# 
+# - experiment definition files
 # 
 # - an algorithm for generating scene files
 # 
@@ -27,7 +30,6 @@
 #
 # - WHOLE DIFFERENT TASK FLOW for "inheritance" investigations
 #
-# - a printscreen function
 
 
 
