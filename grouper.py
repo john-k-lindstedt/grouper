@@ -27,6 +27,7 @@
 #
 # - WHOLE DIFFERENT TASK FLOW for "inheritance" investigations
 #
+# - a printscreen function
 
 
 
@@ -95,6 +96,7 @@ class Logger():
         self.filler = fl
         self.file = None
         self.logtype = logtype
+        self.dir = None
         return
     
     #opens a new log and subdirectory
@@ -105,6 +107,7 @@ class Logger():
         dir = dir + "/" + fn + "__" + self.id
         if not os.path.exists(dir):
             os.makedirs(dir)
+        self.dir = dir
         self.file = open(dir+"/"+self.logtype+"__"+fn+"__"+self.id+ext,'w')
         self.file.write(self.delim.join(self.header))
         self.file.write(self.newline)
@@ -127,6 +130,15 @@ class Logger():
     def getDateTimeStamp():
         d = datetime.datetime.now().timetuple()
         return "%d-%02.d-%02.d_%02.d-%02.d-%02.d" % (d[0], d[1], d[2], d[3], d[4], d[5])
+    
+    def screenshot(self, scene_id, scene_name):
+        dir = self.dir + "/screenshots"
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        filepath = dir+"/"+str(scene_id)+ "_" + scene_name + "_" + self.id + ".png"
+        pyglet.image.get_buffer_manager().get_color_buffer().save(filepath)
+
+
 
 
 
@@ -147,7 +159,7 @@ class GroupingTask():
     scene_log_header = ['scene_id','box_id','x','y','w','h','l','r','b','t']
     
     
-    def __init__(self, window, scene_filenames = ["default.json"], subject_id = "test"):
+    def __init__(self, window, scene_filenames = ["default.json"], subject_id = "test", screenshots = True):
         self.SID = subject_id
         self.datetime = Logger.getDateTimeStamp()
         
@@ -178,6 +190,8 @@ class GroupingTask():
         
         self.trial_log = Logger(id = self.SID, header = GroupingTask.trial_log_header, logtype = "trials")
         self.trial_log.open_log(fn = self.datetime)
+        
+        self.screenshots = screenshots
         
 #         self.scene_log = Logger(header = GroupingTask.scene_log_header, logtype = "scenes")
 #         self.scene_log.open_log()
@@ -216,6 +230,8 @@ class GroupingTask():
         
     
     def draw(self):
+        
+        
         s = self.scenes[self.scene_ix]
         
         
@@ -442,6 +458,8 @@ class GroupingTask():
     
     def next_scene(self):
         self.log_trial()
+        if self.screenshots:
+            self.do_screenshot()
         #if we're all out of scenes, we're done
         if (self.scene_ix + 1) >= len(self.scenes):
             self.state = GroupingTask.STATE_COMPLETE
@@ -460,6 +478,13 @@ class GroupingTask():
     def get_time(self):
         return time.time() - self.start_time
         
+    def do_screenshot(self):
+        s = self.scenes[self.scene_ix]
+        window.clear()
+        s.draw_boxes()
+        s.draw_centers()
+        self.evt_log.screenshot(self.scene_ix, s.id)
+
     
 class Scene():
     
@@ -668,7 +693,6 @@ class Box():
             ("c4B", bgc + bgc + bgc + bgc + bgc + bgc + bgc + bgc)
         )
         
-        
     
     def move(self, offset):
         self.x += offset[0]
@@ -728,6 +752,7 @@ if __name__ == "__main__":
     
     @window.event
     def on_draw():
+        
         window.clear()
         task.draw()
     

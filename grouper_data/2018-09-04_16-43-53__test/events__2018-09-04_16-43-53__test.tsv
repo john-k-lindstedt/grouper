@@ -1,0 +1,182 @@
+ts	SID	scene_id	group_id	state	evt_id	evt_data1	evt_data2
+2.054112195968628	test	boxes	-1	COUNT	center_marked	(710, 530)	[0]
+2.6995952129364014	test	boxes	-1	COUNT	center_marked	(961, 521)	[1]
+2.885033130645752	test	boxes	0	GROUP	begin_grouping	NA	NA
+3.6393113136291504	test	boxes	0	GROUP	drag_started	[626, 655]	NA
+3.8972442150115967	test	boxes	0	GROUP	drag_select	[626, 655, 821, 343]	['box0', 'box1', 'box2', 'box3']
+4.683166980743408	test	boxes	1	GROUP	next_group	NA	NA
+5.129440069198608	test	boxes	1	GROUP	drag_started	[892, 699]	NA
+5.3816282749176025	test	boxes	1	GROUP	drag_select	[892, 699, 1145, 307]	['box4', 'box5', 'box6', 'box7']
+6.09923529624939	test	scene0	-1	COUNT	next_scene	NA	NA
+7.373752117156982	test	scene0	-1	COUNT	center_marked	(891, 797)	[0]
+8.048754215240479	test	scene0	-1	COUNT	center_marked	(891, 878)	[1]
+8.741618394851685	test	scene0	-1	COUNT	center_marked	(402, 856)	[2]
+9.320333242416382	test	scene0	-1	COUNT	center_marked	(415, 661)	[3]
+9.913231134414673	test	scene0	-1	COUNT	center_marked	(400, 433)	[4]
+10.547261238098145	test	scene0	-1	COUNT	center_marked	(403, 242)	[5]
+11.180299043655396	test	scene0	-1	COUNT	center_marked	(631, 186)	[6]
+11.826624155044556	test	scene0	-1	COUNT	center_marked	(793, 547)	[7]
+12.56157922744751	test	scene0	-1	COUNT	center_marked	(934, 653)	[8]
+13.333263158798218	test	scene0	-1	COUNT	center_marked	(1152, 561)	[9]
+14.36533522605896	test	scene0	-1	COUNT	center_marked	(1231, 193)	[10]
+16.01519227027893	test	scene0	-1	COUNT	center_deleted	(1231, 193)	[-10]
+16.171645402908325	test	scene0	-1	COUNT	center_deleted	(1152, 561)	[-9]
+16.3416850566864	test	scene0	-1	COUNT	center_deleted	(934, 653)	[-8]
+16.514621257781982	test	scene0	-1	COUNT	center_deleted	(793, 547)	[-7]
+16.67759919166565	test	scene0	-1	COUNT	center_deleted	(631, 186)	[-6]
+16.843921184539795	test	scene0	-1	COUNT	center_deleted	(403, 242)	[-5]
+17.015626192092896	test	scene0	-1	COUNT	center_deleted	(400, 433)	[-4]
+17.19058632850647	test	scene0	-1	COUNT	center_deleted	(415, 661)	[-3]
+17.366587162017822	test	scene0	-1	COUNT	center_deleted	(402, 856)	[-2]
+17.693878173828125	test	scene0	-1	COUNT	center_deleted	(891, 878)	[-1]
+17.883554220199585	test	scene0	-1	COUNT	center_deleted	(891, 797)	[0]
+19.412949085235596	test	scene0	-1	COUNT	center_marked	(921, 789)	[0]
+20.062076330184937	test	scene0	-1	COUNT	center_marked	(900, 894)	[1]
+20.745213985443115	test	scene0	-1	COUNT	center_marked	(388, 865)	[2]
+21.415417194366455	test	scene0	-1	COUNT	center_marked	(395, 640)	[3]
+22.155550003051758	test	scene0	-1	COUNT	center_marked	(404, 453)	[4]
+22.813117265701294	test	scene0	-1	COUNT	center_marked	(405, 241)	[5]
+23.495023250579834	test	scene0	-1	COUNT	center_marked	(626, 192)	[6]
+24.23017907142639	test	scene0	-1	COUNT	center_marked	(787, 556)	[7]
+24.954216957092285	test	scene0	-1	COUNT	center_marked	(940, 643)	[8]
+25.595486164093018	test	scene0	-1	COUNT	center_marked	(1143, 557)	[9]
+26.326439380645752	test	scene0	-1	COUNT	center_marked	(1218, 202)	[10]
+26.515762329101562	test	scene0	0	GROUP	begin_grouping	NA	NA
+27.564216136932373	test	scene0	0	GROUP	drag_started	[606, 837]	NA
+27.97871208190918	test	scene0	0	GROUP	drag_select	[606, 837, 1267, 735]	['box10', 'box11', 'box12', 'box13', 'box14', 'box15', 'box16', 'box17', 'box18', 'box19', 'box20', 'box21', 'box22', 'box23', 'box24', 'box25', 'box26', 'box27', 'box28', 'box29', 'box30', 'box31', 'box32', 'box33', 'box34', 'box35', 'box36', 'box37', 'box38', 'box39', 'box40', 'box41', 'box42', 'box43', 'box44', 'box45', 'box46', 'box47', 'box48', 'box49', 'box50', 'box51', 'box52', 'box53', 'box54', 'box55', 'box56', 'box57', 'box58', 'box59']
+29.23232913017273	test	scene0	0	GROUP	group_deselected	NA	['-box10', '-box11', '-box12', '-box13', '-box14', '-box15', '-box16', '-box17', '-box18', '-box19', '-box20', '-box21', '-box22', '-box23', '-box24', '-box25', '-box26', '-box27', '-box28', '-box29', '-box30', '-box31', '-box32', '-box33', '-box34', '-box35', '-box36', '-box37', '-box38', '-box39', '-box40', '-box41', '-box42', '-box43', '-box44', '-box45', '-box46', '-box47', '-box48', '-box49', '-box50', '-box51', '-box52', '-box53', '-box54', '-box55', '-box56', '-box57', '-box58', '-box59']
+30.53287625312805	test	scene0	0	GROUP	drag_started	[832, 950]	NA
+31.005268096923828	test	scene0	0	GROUP	drag_select	[832, 950, 920, 420]	['box1', 'box4', 'box7', 'box9', 'box16', 'box17', 'box18', 'box36', 'box37', 'box38', 'box55', 'box56', 'box95']
+31.843292236328125	test	scene0	0	GROUP	group_deselected	NA	['-box1', '-box4', '-box7', '-box9', '-box16', '-box17', '-box18', '-box36', '-box37', '-box38', '-box55', '-box56', '-box95']
+33.49433135986328	test	scene0	0	GROUP	drag_started	[631, 842]	NA
+34.76179003715515	test	scene0	0	GROUP	drag_select	[631, 842, 1369, 568]	['box6', 'box7', 'box8', 'box9', 'box10', 'box11', 'box12', 'box13', 'box14', 'box15', 'box16', 'box17', 'box18', 'box19', 'box20', 'box21', 'box22', 'box23', 'box24', 'box25', 'box26', 'box27', 'box28', 'box29', 'box30', 'box31', 'box32', 'box33', 'box34', 'box35', 'box36', 'box37', 'box38', 'box39', 'box40', 'box41', 'box42', 'box43', 'box44', 'box45', 'box46', 'box47', 'box48', 'box49', 'box50', 'box51', 'box52', 'box53', 'box54', 'box55', 'box56', 'box57', 'box58', 'box59']
+35.67897033691406	test	scene0	0	GROUP	click_selection	[1141, 597]	['-box8']
+36.4384183883667	test	scene0	0	GROUP	click_selection	[832, 592]	['-box7']
+37.4465811252594	test	scene0	0	GROUP	click_selection	[728, 592]	['-box6']
+38.24214720726013	test	scene0	0	GROUP	click_selection	[886, 652]	['-box9']
+38.95252823829651	test	scene0	1	GROUP	next_group	NA	NA
+39.91958808898926	test	scene0	1	GROUP	click_selection	[812, 895]	['box95']
+40.081308364868164	test	scene0	2	GROUP	next_group	NA	NA
+40.89532423019409	test	scene0	2	GROUP	drag_started	[319, 909]	NA
+41.30256223678589	test	scene0	2	GROUP	drag_select	[319, 909, 536, 799]	['box91', 'box92', 'box93', 'box94']
+41.69408321380615	test	scene0	3	GROUP	next_group	NA	NA
+42.47553014755249	test	scene0	3	GROUP	drag_started	[307, 698]	NA
+42.83431124687195	test	scene0	3	GROUP	drag_select	[307, 698, 592, 540]	['box82', 'box83', 'box84', 'box85', 'box86', 'box87', 'box88', 'box89', 'box90']
+43.143288135528564	test	scene0	4	GROUP	next_group	NA	NA
+43.880473136901855	test	scene0	4	GROUP	drag_started	[326, 484]	NA
+44.46237111091614	test	scene0	4	GROUP	drag_select	[326, 484, 567, 389]	['box77', 'box78', 'box79', 'box80', 'box81']
+44.73511719703674	test	scene0	5	GROUP	next_group	NA	NA
+45.38753628730774	test	scene0	5	GROUP	drag_started	[327, 324]	NA
+46.01302623748779	test	scene0	5	GROUP	drag_select	[327, 324, 531, 175]	['box72', 'box73', 'box74', 'box75', 'box76']
+46.26276206970215	test	scene0	6	GROUP	next_group	NA	NA
+46.94761610031128	test	scene0	6	GROUP	drag_started	[567, 268]	NA
+47.31216812133789	test	scene0	6	GROUP	drag_select	[567, 268, 794, 112]	['box62', 'box63', 'box68', 'box69', 'box70', 'box71']
+47.60980010032654	test	scene0	7	GROUP	next_group	NA	NA
+48.60868215560913	test	scene0	7	GROUP	drag_started	[688, 636]	NA
+49.55040621757507	test	scene0	7	GROUP	drag_select	[688, 636, 861, 458]	['box0', 'box1', 'box3', 'box4', 'box6', 'box7']
+49.838242053985596	test	scene0	8	GROUP	next_group	NA	NA
+50.68745827674866	test	scene0	8	GROUP	click_selection	[978, 646]	['box9']
+50.901222229003906	test	scene0	9	GROUP	next_group	NA	NA
+51.71182107925415	test	scene0	9	GROUP	drag_started	[1105, 615]	NA
+51.94002938270569	test	scene0	9	GROUP	drag_select	[1105, 615, 1243, 422]	['box2', 'box5', 'box8']
+52.28569412231445	test	scene0	10	GROUP	next_group	NA	NA
+52.991858959198	test	scene0	10	GROUP	drag_started	[1156, 284]	NA
+53.94935727119446	test	scene0	10	GROUP	drag_select	[1156, 284, 1375, 106]	['box60', 'box61', 'box64', 'box65', 'box66', 'box67']
+54.567036390304565	test	scene1	-1	COUNT	next_scene	NA	NA
+55.8689022064209	test	scene1	-1	COUNT	center_marked	(626, 851)	[0]
+56.61676812171936	test	scene1	-1	COUNT	center_marked	(1197, 868)	[1]
+57.37955617904663	test	scene1	-1	COUNT	center_marked	(422, 801)	[2]
+58.11161518096924	test	scene1	-1	COUNT	center_marked	(410, 602)	[3]
+58.825993061065674	test	scene1	-1	COUNT	center_marked	(400, 381)	[4]
+59.55678105354309	test	scene1	-1	COUNT	center_marked	(398, 196)	[5]
+60.312111139297485	test	scene1	-1	COUNT	center_marked	(780, 483)	[6]
+61.08856916427612	test	scene1	-1	COUNT	center_marked	(1165, 497)	[7]
+61.770916223526	test	scene1	-1	COUNT	center_marked	(943, 401)	[8]
+62.485785245895386	test	scene1	-1	COUNT	center_marked	(867, 255)	[9]
+63.19244432449341	test	scene1	-1	COUNT	center_marked	(882, 149)	[10]
+63.525309324264526	test	scene1	0	GROUP	begin_grouping	NA	NA
+64.60488724708557	test	scene1	0	GROUP	drag_started	[560, 916]	NA
+64.90525436401367	test	scene1	0	GROUP	drag_select	[560, 916, 848, 774]	['box62', 'box63', 'box68', 'box69', 'box70', 'box71']
+65.24569010734558	test	scene1	1	GROUP	next_group	NA	NA
+66.37997603416443	test	scene1	1	GROUP	drag_started	[1130, 907]	NA
+67.38643622398376	test	scene1	1	GROUP	drag_select	[1130, 907, 1381, 814]	['box60', 'box61', 'box64', 'box65', 'box66', 'box67']
+67.67861199378967	test	scene1	2	GROUP	next_group	NA	NA
+68.65460300445557	test	scene1	2	GROUP	drag_started	[285, 863]	NA
+69.15808415412903	test	scene1	2	GROUP	drag_select	[285, 863, 531, 737]	['box72', 'box73', 'box74', 'box75', 'box76']
+69.47963500022888	test	scene1	3	GROUP	next_group	NA	NA
+70.19896507263184	test	scene1	3	GROUP	drag_started	[336, 671]	NA
+70.92055201530457	test	scene1	3	GROUP	drag_select	[336, 671, 568, 535]	['box77', 'box78', 'box79', 'box80', 'box81']
+71.15257120132446	test	scene1	4	GROUP	next_group	NA	NA
+71.96942639350891	test	scene1	4	GROUP	drag_started	[334, 448]	NA
+72.79743909835815	test	scene1	4	GROUP	drag_select	[334, 448, 536, 305]	['box82', 'box83', 'box84', 'box85', 'box86', 'box87', 'box88', 'box89', 'box90']
+73.01018619537354	test	scene1	5	GROUP	next_group	NA	NA
+73.83786606788635	test	scene1	5	GROUP	drag_started	[335, 262]	NA
+74.16457033157349	test	scene1	5	GROUP	drag_select	[335, 262, 510, 137]	['box91', 'box92', 'box93', 'box94']
+74.59354329109192	test	scene1	6	GROUP	next_group	NA	NA
+75.5519962310791	test	scene1	6	GROUP	drag_started	[708, 582]	NA
+75.95924615859985	test	scene1	6	GROUP	drag_select	[708, 582, 809, 447]	['box0', 'box1', 'box3', 'box4', 'box6', 'box7']
+76.34434103965759	test	scene1	7	GROUP	next_group	NA	NA
+77.16869831085205	test	scene1	7	GROUP	drag_started	[1113, 578]	NA
+77.54255533218384	test	scene1	7	GROUP	drag_select	[1113, 578, 1181, 408]	['box2', 'box5', 'box8']
+77.9063880443573	test	scene1	8	GROUP	next_group	NA	NA
+78.67850518226624	test	scene1	8	GROUP	click_selection	[1026, 400]	['box9']
+78.82515835762024	test	scene1	9	GROUP	next_group	NA	NA
+79.75749826431274	test	scene1	9	GROUP	drag_started	[620, 311]	NA
+80.42557120323181	test	scene1	9	GROUP	drag_select	[620, 311, 1245, 217]	['box10', 'box11', 'box12', 'box13', 'box14', 'box15', 'box16', 'box17', 'box18', 'box19', 'box20', 'box21', 'box22', 'box23', 'box24', 'box25', 'box26', 'box27', 'box28', 'box29', 'box30', 'box31', 'box32', 'box33', 'box34', 'box35', 'box36', 'box37', 'box38', 'box39', 'box40', 'box41', 'box42', 'box43', 'box44', 'box45', 'box46', 'box47', 'box48', 'box49', 'box50', 'box51', 'box52', 'box53', 'box54', 'box55', 'box56', 'box57', 'box58', 'box59']
+80.69524621963501	test	scene1	10	GROUP	next_group	NA	NA
+81.73371315002441	test	scene1	10	GROUP	click_selection	[839, 159]	['box95']
+82.19064402580261	test	scene2	-1	COUNT	next_scene	NA	NA
+83.46288895606995	test	scene2	-1	COUNT	center_marked	(753, 894)	[0]
+84.3320951461792	test	scene2	-1	COUNT	center_marked	(1261, 874)	[1]
+85.05543398857117	test	scene2	-1	COUNT	center_marked	(749, 794)	[2]
+85.7792010307312	test	scene2	-1	COUNT	center_marked	(726, 658)	[3]
+86.50953030586243	test	scene2	-1	COUNT	center_marked	(910, 557)	[4]
+87.23324418067932	test	scene2	-1	COUNT	center_marked	(533, 565)	[5]
+87.94591426849365	test	scene2	-1	COUNT	center_marked	(1278, 670)	[6]
+88.66284918785095	test	scene2	-1	COUNT	center_marked	(1260, 445)	[7]
+89.41020512580872	test	scene2	-1	COUNT	center_marked	(1259, 258)	[8]
+90.10960221290588	test	scene2	-1	COUNT	center_marked	(1001, 191)	[9]
+90.83243012428284	test	scene2	-1	COUNT	center_marked	(437, 191)	[10]
+91.06952929496765	test	scene2	0	GROUP	begin_grouping	NA	NA
+92.0806610584259	test	scene2	0	GROUP	click_selection	[670, 891]	['box95']
+92.26134824752808	test	scene2	1	GROUP	next_group	NA	NA
+98.94331812858582	test	scene2	1	GROUP	drag_started	[1154, 883]	NA
+99.3264672756195	test	scene2	1	GROUP	drag_select	[1154, 883, 1351, 814]	['box91', 'box92', 'box93', 'box94']
+99.64437508583069	test	scene2	2	GROUP	next_group	NA	NA
+100.6330201625824	test	scene2	2	GROUP	drag_started	[414, 839]	NA
+101.1203682422638	test	scene2	2	GROUP	drag_select	[414, 839, 1084, 720]	['box10', 'box11', 'box12', 'box13', 'box14', 'box15', 'box16', 'box17', 'box18', 'box19', 'box20', 'box21', 'box22', 'box23', 'box24', 'box25', 'box26', 'box27', 'box28', 'box29', 'box30', 'box31', 'box32', 'box33', 'box34', 'box35', 'box36', 'box37', 'box38', 'box39', 'box40', 'box41', 'box42', 'box43', 'box44', 'box45', 'box46', 'box47', 'box48', 'box49', 'box50', 'box51', 'box52', 'box53', 'box54', 'box55', 'box56', 'box57', 'box58', 'box59']
+101.4192762374878	test	scene2	3	GROUP	next_group	NA	NA
+102.14302635192871	test	scene2	3	GROUP	click_selection	[765, 649]	['box9']
+102.28938317298889	test	scene2	4	GROUP	next_group	NA	NA
+103.24159121513367	test	scene2	4	GROUP	drag_started	[749, 609]	NA
+103.63225603103638	test	scene2	4	GROUP	drag_select	[749, 609, 1001, 477]	['box0', 'box1', 'box3', 'box4', 'box6', 'box7']
+103.94621706008911	test	scene2	5	GROUP	next_group	NA	NA
+104.81355714797974	test	scene2	5	GROUP	drag_started	[484, 620]	NA
+105.13072109222412	test	scene2	5	GROUP	drag_select	[484, 620, 609, 485]	['box2', 'box5', 'box8']
+105.44560122489929	test	scene2	6	GROUP	next_group	NA	NA
+106.34071397781372	test	scene2	6	GROUP	drag_started	[1129, 720]	NA
+107.18480896949768	test	scene2	6	GROUP	drag_select	[1129, 720, 1420, 577]	['box82', 'box83', 'box84', 'box85', 'box86', 'box87', 'box88', 'box89', 'box90']
+107.43612813949585	test	scene2	7	GROUP	next_group	NA	NA
+108.30678820610046	test	scene2	7	GROUP	drag_started	[1087, 482]	NA
+108.8666832447052	test	scene2	7	GROUP	drag_select	[1087, 482, 1431, 349]	['box77', 'box78', 'box79', 'box80', 'box81']
+109.29094815254211	test	scene2	8	GROUP	next_group	NA	NA
+110.02882838249207	test	scene2	8	GROUP	drag_started	[1180, 315]	NA
+110.40998196601868	test	scene2	8	GROUP	drag_select	[1180, 315, 1339, 194]	['box72', 'box73', 'box74', 'box75', 'box76']
+110.77704238891602	test	scene2	9	GROUP	next_group	NA	NA
+111.54035305976868	test	scene2	9	GROUP	drag_started	[904, 264]	NA
+112.76182818412781	test	scene2	9	GROUP	drag_select	[904, 264, 1107, 134]	['box62', 'box63', 'box68', 'box69', 'box70', 'box71']
+113.06001996994019	test	scene2	10	GROUP	next_group	NA	NA
+114.19261908531189	test	scene2	10	GROUP	drag_started	[338, 279]	NA
+115.18328309059143	test	scene2	10	GROUP	drag_select	[338, 279, 579, 119]	['box60', 'box61', 'box64', 'box65', 'box66', 'box67']
+115.81406426429749	test	scene3	-1	COUNT	next_scene	NA	NA
+117.77153730392456	test	scene3	-1	COUNT	center_marked	(568, 810)	[0]
+119.55126523971558	test	scene3	-1	COUNT	center_deleted	(568, 810)	[0]
+120.77109098434448	test	scene3	-1	COUNT	center_marked	(428, 859)	[0]
+121.65591812133789	test	scene3	-1	COUNT	center_marked	(1011, 861)	[1]
+128.26722311973572	test	scene3	0	GROUP	begin_grouping	NA	NA
+129.24415636062622	test	scene3	0	GROUP	drag_started	[270, 885]	NA
+130.015367269516	test	scene3	0	GROUP	drag_select	[270, 885, 628, 783]	['box60', 'box61', 'box64', 'box65', 'box66', 'box67']
+130.30478024482727	test	scene3	1	GROUP	next_group	NA	NA
+131.09661221504211	test	scene3	1	GROUP	drag_started	[855, 906]	NA
+131.65677213668823	test	scene3	1	GROUP	drag_select	[855, 906, 1440, 706]	['box62', 'box63', 'box68', 'box69', 'box70', 'box71', 'box72', 'box73', 'box74', 'box75', 'box76']
+132.31679797172546	test	scene3	1	COMPLETE	task_complete	NA	NA
