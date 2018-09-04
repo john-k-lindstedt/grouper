@@ -12,11 +12,27 @@ experimental task written in pyglet for investigating human visual grouping proc
 ## Running Grouper
 
 
+### Dependencies 
+Python 3.X
+Pyglet
+
 ### Command line
 
+> python3 grouper.py
+
+or simply
+
+> python grouper.py
 
 ### Task controls
 
+- Spacebar / enter
+
+- Click
+
+- Click and drag
+
+- Backspace / Delete (Mac)
 
 
 
