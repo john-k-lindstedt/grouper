@@ -47,3 +47,9 @@ experimental task written in pyglet for investigating human visual grouping proc
 ### Scene file
 
 ### Screenshots
+
+
+
+![](grouper_data/_example_data/2018-09-04_16-43-53__test/screenshots/0_boxes_test.png)
+
+![](grouper_data/_example_data/2018-09-04_16-43-53__test/screenshots/1_scene0_test.png)
