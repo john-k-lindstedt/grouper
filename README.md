@@ -1,7 +1,7 @@
 
 ![](icons/logo.png)
 
-# Grouper
+# Grouper: A paradigm for the experimental investigation of human visual grouping processes. 
 
 
 
