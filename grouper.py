@@ -6,8 +6,48 @@
 # - added reminder text to the main task
 # - added a printscreen function
 
+
 # todo:
+# - shuffling the trials?
 # 
+# - consider blocking without grouping all objects; 
+# 
+# - survey at the end? (e.g., asking about ungrouped objets)
+# 
+# - practice / demo in instructions; simple, single group vs multi-group basic;
+# 
+# - fold in VEGA model predictions
+#
+# - gradients for selection rather than colors!
+# 
+
+# Theoretical:
+# - similarity, proximity;
+# - symmetry vs asymmetry
+#
+# - Proximity works decently
+#   - how does adding color change proximity;
+#   - sharp contrast, vs careful gradients
+# 
+# - Input measures (IVs)
+#   - varying color and proximity together to find WHERE they break; 
+#   - color distance?: hue, luminance, xxx???, 
+#     - we can pick one of these dimensions; black vs white; Three categories? Four?
+#   - 
+#
+# - Outcome measures (DVs)
+#   - group memberships
+#   - group count
+#   - grouping duration (counts AND members, and total)
+#   - 
+# 
+# - Models:
+#   - proximity exists (previous VEGA model)
+#   - color-dist?
+#   - compare BOTH of these models to human participant data; see when they break
+#   
+
+# OLD todos
 # - experiment definition files
 # 
 # - an algorithm for generating scene files
@@ -40,6 +80,7 @@ import json
 import os, sys
 import datetime, time
 import xml.etree.ElementTree as ET
+import random
 
 
 
@@ -161,7 +202,7 @@ class GroupingTask():
     scene_log_header = ['scene_id','box_id','x','y','w','h','l','r','b','t']
     
     
-    def __init__(self, window, scene_filenames = ["default.json"], subject_id = "test", screenshots = True):
+    def __init__(self, window, scene_dir = "default", subject_id = "test", screenshots = True):
         self.SID = subject_id
         self.datetime = Logger.getDateTimeStamp()
         
@@ -177,8 +218,25 @@ class GroupingTask():
         self.dragging = False
         
         
+        self.color_replacements = {
+            "#f8cecc": "#FF00FF",
+            "#b85450": "#FF00FF",
+            "#FFFFFF": "#000000"
+        }
+        
+        self.colors_to_balance = [(0,0,0),(255,0,255)]
+            
+        self.dim_factor = 10
+        
         self.scenes = []
-        self.read_scene_files(scene_filenames)
+        self.scene_dir_root = "scenes"
+        self.scene_dir = scene_dir
+        self.read_scene_files()
+        
+        random.shuffle(self.scenes)
+        self.counterbalance_colors()
+        
+        #go into each scene and swap its boxes' colors around. 
         
         self.scene_ix = 0
         
@@ -204,10 +262,8 @@ class GroupingTask():
         self.instruct_step = 0
         
         self.instruct_text = [
-            "lorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsum",
-            "Borem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsum",
-            "Corem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsum",
-            "Dorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsum"
+            "In this study, we're interested in how you group objects visually on the screen.",
+            "Try not to linger TOO long on each scene, we want you to get into the swing of it."
             ]
         
         self.instruct_boxes = []
@@ -238,13 +294,13 @@ class GroupingTask():
         
         
         if self.state == GroupingTask.STATE_GROUP:
-            s.draw_boxes()
+            s.draw_boxes(self.state, self.dim_factor)
             s.draw_current_center()
             if self.dragging:
                 self.draw_drag()
             self.grouping_hud.draw()
         elif self.state == GroupingTask.STATE_COUNT:
-            s.draw_boxes()
+            s.draw_boxes(self.state, self.dim_factor)
             s.draw_centers()
             self.counting_hud.draw()
         elif self.state == GroupingTask.STATE_INSTRUCT:
@@ -329,24 +385,37 @@ class GroupingTask():
                 dct[s][bid]["right"] = b.r
                 dct[s][bid]["bottom"] = b.b
                 dct[s][bid]["top"] = b.t
-                dct[s][bid]["red"] = b.rgb[0]
-                dct[s][bid]["green"] = b.rgb[1]
-                dct[s][bid]["blue"] = b.rgb[2]
+                dct[s][bid]["stroke_c"] = b.stroke_c
+                dct[s][bid]["fill_c"] = b.fill_c
                 dct[s][bid]["alpha"] = b.alpha
         
         f.write(json.dumps(dct, indent=4))
         f.close()
+        
+    def hex_to_rgb(self, value):
+        value = value.lstrip('#')
+        lv = len(value)
+        out = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+        print(out)
+        return out
     
-    def read_scene_files(self, fns):
-        for fn in fns:
-            name, ext = (fn.split(".")[:-1][0], fn.split(".")[-1])
+    def read_scene_files(self):
+        
+        scene_list = os.listdir(self.scene_dir_root + "/" + self.scene_dir)
+        
+        if ".DS_Store" in scene_list:
+            scene_list.remove(".DS_Store")
+            
+        for scene_fn in scene_list:
+            name, ext = (scene_fn.split(".")[:-1][0], scene_fn.split(".")[-1])
             if ext == "json":
                 self.read_scenes_json(name)
             elif ext == "xml":
                 self.read_scene_xml(name)
     
     def read_scenes_json(self, name):
-        f = open("./scenes/json/" + name + ".json",'r')
+        filepath = self.scene_dir_root + "/" + self.scene_dir + "/" + name + ".json"
+        f = open( filepath,'r')
         text = f.read()
         
         scenes = json.loads(text)
@@ -359,34 +428,97 @@ class GroupingTask():
             self.scenes.append(newscene)
     
     def read_scene_xml(self, name):
+        filepath = self.scene_dir_root + "/" + self.scene_dir + "/" + name + ".xml"
         #xmltext = open("./scenes/xml/boxes.xml").read()
-        tree = ET.parse("./scenes/xml/" + name + ".xml")
+        tree = ET.parse(filepath)
         root = tree.getroot()
         
         #build a dictionary to give to the Scene object
         data = {}
         
+        print("root",root)
+        print(root[0])
+        print(root[0][0])
+        print(root[0][0][0])
+        
         boxid = 0
         #get all of the geometries: y is top, x is left, width and height. 
-        for cell in root[0]:
+        for cell in root[0][0][0]:
+            print(cell)
+            
             for geom in cell:
+                print(geom)
                 att = geom.attrib
                 left = int(att['x'])
                 top = int(att['y'])
                 width = int(att['width'])
                 height = int(att['height'])
                 
+                ####
+                
+                #get style info from parent
+                cellstyle = cell.attrib['style']
+                if cellstyle[-1] == ";":
+                    cellstyle = cellstyle[0:-1]
+                style = dict(x.split("=") for x in cellstyle.split(";"))
+                if 'strokeColor' in style.keys():
+                    stroke_cx = style['strokeColor']
+                else:
+                    stroke_cx = '#000000'
+                if 'fillColor' in style.keys():
+                    fill_cx = style['fillColor']
+                else:
+                    fill_cx = '#FFFFFF'
+                
+                #replace colors -- VERY HACKY
+                stroke_cx = self.replace_color_hex(stroke_cx)
+                fill_cx = self.replace_color_hex(fill_cx)
+                
+                stroke_c = self.hex_to_rgb(stroke_cx)
+                fill_c = self.hex_to_rgb(fill_cx)
+                
+                ####
+                
                 boxname = "box" + str(boxid)
-                x = left + width //2
-                y = window.height - (top + height //2)
+                x = left + width // 2
+                y = window.height - (top + height // 2)
                 data[boxname] = {'center-x':x,'center-y':y,'width':width,'height':height,
-                                 'red':0,'green':0,'blue':0,'alpha':255}
+                                 'stroke_c':stroke_c,'fill_c':fill_c,'alpha':255}
                 boxid += 1
         
         
         #create a new scene out of them
         self.scenes.append(Scene(scene_data = data, id = name))
-    
+        
+    def replace_color_hex(self, color):
+        if(color in self.color_replacements):
+            return self.color_replacements[color]
+        else:
+            return color
+            
+    def counterbalance_colors(self):
+        
+        colswap = self.colors_to_balance
+        
+        swap_vector = ([0] * int(len(self.scenes)/2)) + ([1] * int(len(self.scenes)/2))
+        random.shuffle(swap_vector)
+        
+        for ix, swap in enumerate(swap_vector):
+            #print(ix, swap, scenes[ix])
+            if swap:
+                for b in self.scenes[ix].boxes:
+                    if b.stroke_c == colswap[0]:
+                        b.stroke_c = colswap[1]
+                    elif b.stroke_c == colswap[1]:
+                        b.stroke_c = colswap[0]
+                    
+                    if b.fill_c == colswap[0]:
+                        b.fill_c = colswap[1]
+                    elif b.fill_c == colswap[1]:
+                        b.fill_c = colswap[0]
+                print("swapping colors for scene " + str(ix))
+        
+        
     def click_select(self, mx, my):
         clicked = self.scenes[self.scene_ix].clicked(mx, my)
         
@@ -483,7 +615,7 @@ class GroupingTask():
     def do_screenshot(self):
         s = self.scenes[self.scene_ix]
         window.clear()
-        s.draw_boxes()
+        s.draw_boxes(self.state, self.dim_factor)
         s.draw_centers()
         self.evt_log.screenshot(self.scene_ix, s.id)
 
@@ -522,9 +654,10 @@ class Scene():
             y = s[box]["center-y"]
             w = s[box]["width"]
             h = s[box]["height"]
-            rgb = (s[box]["red"], s[box]["green"], s[box]["blue"])
+            stroke_c = s[box]["stroke_c"]
+            fill_c = s[box]["fill_c"]
             alpha = s[box]["alpha"]
-            self.boxes.append(Box(x,y,w,h, id = box, rgb = rgb, alpha = alpha))
+            self.boxes.append(Box(x,y,w,h, id = box, stroke_c = stroke_c, fill_c = fill_c, alpha = alpha))
             box_ID += 1
     
     def get_bounding_box(self):
@@ -548,7 +681,8 @@ class Scene():
     
     
     def draw_drag(self, x1, y1, x2, y2):
-        color = colors[list(colors)[self.group_num % len(colors)]] + (100,)
+        #color = colors[list(colors)[self.group_num % len(colors)]] + (100,)
+        color = (128,128,128,100)
         pyglet.graphics.draw(4, pyglet.gl.GL_QUADS, 
             ("v2f", [x1, y1,
                      x1, y2,
@@ -557,9 +691,9 @@ class Scene():
             ("c4B", color + color + color + color)
             )
         
-    def draw_boxes(self):
+    def draw_boxes(self, state, dim):
         for b in self.boxes:
-            b.draw(self.group_num)
+            b.draw(self.group_num, state, dim)
     
     def draw_centers(self):
         for c in self.centers:
@@ -601,7 +735,10 @@ class Scene():
         return (new_center.x, new_center.y, new_center.id)
     
     def undo_center(self):
-        deleted = self.centers.pop()
+        if len(self.centers) > 0:
+            deleted = self.centers.pop()
+        else:
+            deleted = None
         if deleted:
             self.center_id -= 1
             return (deleted.x, deleted.y, deleted.id)
@@ -615,20 +752,23 @@ class Center():
         self.y = y
         self.size = 10
         self.id = id
+        self.border_color = (0,0,0,255)
+        #self.label_color = color = colors[list(colors)[self.id%len(colors)]] + (255,)
+        self.label_color = (255,255,255,255)
         
-        self.border = pyglet.text.Label('x', font_name = 'Arial',
+        self.border = pyglet.text.Label('·', font_name = 'Arial',
                                        font_size = 45, bold = True,
-                                       x = self.x, y = self.y + 11,
-                                       color = (0,0,0,255),
+                                       x = self.x, y = self.y + 6,
+                                       color = self.border_color,
                                        anchor_x = 'center', anchor_y = 'center')
-        self.label = pyglet.text.Label('x', font_name = 'Arial',
+        self.label = pyglet.text.Label('·', font_name = 'Arial',
                                        font_size = 40, bold = False,
-                                       x = self.x, y = self.y + 11,
-                                       color = colors[list(colors)[self.id%len(colors)]] + (255,),
+                                       x = self.x, y = self.y + 6,
+                                       color = self.label_color,
                                        anchor_x = 'center', anchor_y = 'center')
         
     def draw(self):
-        c = colors[list(colors)[self.id%len(colors)]] + (255,)
+        #c = colors[list(colors)[self.id%len(colors)]] + (255,)
         
         s = self.size
         
@@ -647,7 +787,7 @@ class Center():
 
 class Box():
     
-    def __init__(self, x, y, w, h, id = -1, rgb = (0,0,0), alpha = 255):
+    def __init__(self, x, y, w, h, id = -1, stroke_c = (0,0,0), fill_c = (255,255,255), alpha = 255):
         self.id = id
         self.x = x
         self.y = y
@@ -657,32 +797,38 @@ class Box():
         self.b = int(self.y - (self.h / 2))
         self.l = int(self.x - (self.w / 2))
         self.r = int(self.x + (self.w / 2))
-        self.rgb = rgb
+        self.stroke_c = stroke_c
+        self.fill_c = fill_c
         self.alpha = alpha
         self.selected_color = (100,100,250,255)
         self.group = -1
         self.selected = False
         self.border_width = 2
-        self.border_color = (0,0,0,255)
+        #self.border_color = (0,0,0,255)
+        self.border_color = (random.randint(0,255),random.randint(0,255),random.randint(0,255),255)
     
     
-    def draw(self, group):
-    
+    def draw(self, group, state, dim):
+         
         #draw the fill-color if this box is grouped
-        if self.group != -1:
-            c = colors[list(colors)[self.group % len(colors)]] + (self.alpha,)
+        if (self.group != -1) or (state == GroupingTask.STATE_COUNT):
+            #fc = colors[list(colors)[self.group % len(colors)]] + (self.alpha,)
+            fc = (self.fill_c[0], self.fill_c[1], self.fill_c[2], self.alpha)
+            sc = (self.stroke_c[0], self.stroke_c[1], self.stroke_c[2], self.alpha)
+        else:
+            fc = (self.fill_c[0], self.fill_c[1], self.fill_c[2], int(self.alpha / dim))
+            sc = (self.stroke_c[0], self.stroke_c[1], self.stroke_c[2], int(self.alpha / dim))
 
-            pyglet.graphics.draw(4, pyglet.gl.GL_QUADS, 
-                ("v2f", [self.l, self.b, 
-                         self.l, self.t,
-                         self.r, self.t, 
-                         self.r, self.b]),
-                ("c4B", c + c + c + c)
-            )
+        pyglet.graphics.draw(4, pyglet.gl.GL_QUADS, 
+            ("v2f", [self.l, self.b, 
+                     self.l, self.t,
+                     self.r, self.t, 
+                     self.r, self.b]),
+            ("c4B", fc + fc + fc + fc)
+        )
         
-        #always draw the border
-        pyglet.gl.glLineWidth(2)
-        bgc = self.border_color
+        #draw the border 
+        pyglet.gl.glLineWidth(4)
         pyglet.graphics.draw(8, pyglet.gl.GL_LINES, 
             ("v2f", [self.l, self.b, 
                      self.l, self.t,
@@ -692,7 +838,7 @@ class Box():
                      self.r, self.b,
                      self.r, self.b,
                      self.l, self.b]),
-            ("c4B", bgc + bgc + bgc + bgc + bgc + bgc + bgc + bgc)
+            ("c4B", sc + sc + sc + sc + sc + sc + sc + sc)
         )
         
     
@@ -815,8 +961,13 @@ if __name__ == "__main__":
         task.update_mouse(x,y)
 
     #pyglet.clock.schedule_interval(update, 1/120.0)
+    
+    
+    
+    
+    #task = GroupingTask(window, subject_id = id_input, scene_dir = "default")
+    task = GroupingTask(window, subject_id = id_input, scene_dir = "color_proximity_1")
 
-    task = GroupingTask(window, subject_id = id_input, scene_filenames = ["boxes.xml","default.json"])
     pyglet.app.run()
     
     
