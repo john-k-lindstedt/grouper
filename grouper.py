@@ -79,17 +79,15 @@
 #
 
 
-
-
-
 import pyglet
+import threading
 import json
-import os, sys
-import datetime, time
+import os
+import sys
+import datetime
+import time
 import xml.etree.ElementTree as ET
 import random
-
-
 
 
 colors = {
@@ -136,9 +134,8 @@ colors = {
         }
 
 
-
 class Logger():
-    def __init__(self,header,task_dir = "default",id = "test", dl = '\t', nl = '\n', fl = 'NA', logtype="main"):
+    def __init__(self, header, task_dir="default", id="test", dl='\t', nl='\n', fl='NA', logtype="main"):
         self.header = header
         self.id = id
         self.delim = dl
@@ -151,7 +148,7 @@ class Logger():
         return
 
     #opens a new log and subdirectory
-    def open_log(self,fn = None, subdir=True, ext = ".tsv"):
+    def open_log(self, fn=None, subdir=True, ext=".tsv"):
         if fn == None:
             fn = Logger.getDateTimeStamp()
         dir = os.path.splitext(os.path.basename(__file__))[0] + "_data"
@@ -159,18 +156,19 @@ class Logger():
         if not os.path.exists(dir):
             os.makedirs(dir)
         self.dir = dir
-        self.file = open(dir+"/"+self.logtype+"__"+fn+"__"+self.id+ext,'w')
+        self.file = open(dir+"/"+self.logtype+"__"+fn+"__"+self.id+ext, 'w')
         self.file.write(self.delim.join(self.header))
         self.file.write(self.newline)
         return
 
     #logs a given line, excluding any keywords not in the header
     def log(self,  **kwargs):
-        line = [self.filler] * len(self.header) #list with filler entries
-        for k, v in kwargs.items(): #if keyword in header, replace filler with value
+        line = [self.filler] * len(self.header)  # list with filler entries
+        for k, v in kwargs.items():  # if keyword in header, replace filler with value
             if k in self.header:
                 line[self.header.index(k)] = str(v)
-        self.file.write(self.delim.join(line)) #convert list to delimited string
+        # convert list to delimited string
+        self.file.write(self.delim.join(line))
         self.file.write(self.newline)
         return
 
@@ -186,34 +184,33 @@ class Logger():
         dir = self.dir + "/screenshots"
         if not os.path.exists(dir):
             os.makedirs(dir)
-        filepath = dir+"/"+str(scene_id)+ "_" + scene_name + "_" + self.id + ".png"
+        filepath = dir+"/"+str(scene_id) + "_" + \
+            scene_name + "_" + self.id + ".png"
         pyglet.image.get_buffer_manager().get_color_buffer().save(filepath)
-
-
-
 
 
 class GroupingTask():
 
-    STATES = [None,"INIT","INSTRUCT","COUNT","GROUP","REVIEW","COMPLETE"]
-    STATE_INIT = 1 #unused
+    STATES = [None, "INIT", "INSTRUCT", "COUNT", "GROUP", "REVIEW", "COMPLETE"]
+    STATE_INIT = 1  # unused
     STATE_INSTRUCT = 2
     STATE_COUNT = 3
     STATE_GROUP = 4
-    STATE_REVIEW = 5 #unused
+    STATE_REVIEW = 5  # unused
     STATE_COMPLETE = 6
 
-    event_log_header = ['ts','SID','scene_id','group_id','state','evt_id','evt_data1','evt_data2']
+    event_log_header = ['ts', 'SID', 'scene_id', 'group_id',
+                        'state', 'evt_id', 'evt_data1', 'evt_data2']
 
-    trial_log_header = ['ts','SID', 'scene_id', 'trial_duration', 'count_duration', 'grouping_duration', 'group_count','group_membership', 'ungrouped_items']
+    trial_log_header = ['ts', 'SID', 'scene_id', 'trial_duration', 'count_duration',
+                        'grouping_duration', 'group_count', 'group_membership', 'ungrouped_items']
 
-    scene_log_header = ['scene_id','box_id','x','y','w','h','l','r','b','t']
+    scene_log_header = ['scene_id', 'box_id',
+                        'x', 'y', 'w', 'h', 'l', 'r', 'b', 't']
 
-
-    def __init__(self, window, scene_dir = "practice", subject_id = "test", screenshots = True):
+    def __init__(self, window, scene_dir="practice", subject_id="test", screenshots=True):
         self.SID = subject_id
         self.datetime = Logger.getDateTimeStamp()
-
 
         #self.state = GroupingTask.STATE_COUNT
         self.state = GroupingTask.STATE_INSTRUCT
@@ -225,14 +222,13 @@ class GroupingTask():
         self.drag_anchor_y = 0
         self.dragging = False
 
-
         self.color_replacements = {
             "#f8cecc": "#FF00FF",
             "#b85450": "#FF00FF",
             "#FFFFFF": "#000000"
         }
 
-        self.colors_to_balance = [(0,0,0),(255,0,255)]
+        self.colors_to_balance = [(0, 0, 0), (255, 0, 255)]
 
         self.dim_factor = 5
 
@@ -255,11 +251,13 @@ class GroupingTask():
         self.count_start_time = None
         self.group_start_time = None
 
-        self.evt_log = Logger(id = self.SID, header = GroupingTask.event_log_header, task_dir = scene_dir, logtype = "events")
-        self.evt_log.open_log(fn = self.datetime)
+        self.evt_log = Logger(
+            id=self.SID, header=GroupingTask.event_log_header, task_dir=scene_dir, logtype="events")
+        self.evt_log.open_log(fn=self.datetime)
 
-        self.trial_log = Logger(id = self.SID, header = GroupingTask.trial_log_header, task_dir = scene_dir, logtype = "trials")
-        self.trial_log.open_log(fn = self.datetime)
+        self.trial_log = Logger(
+            id=self.SID, header=GroupingTask.trial_log_header, task_dir=scene_dir, logtype="trials")
+        self.trial_log.open_log(fn=self.datetime)
 
         self.screenshots = screenshots
 
@@ -272,46 +270,47 @@ class GroupingTask():
         self.instruct_step = 0
 
         self.instruct_text = ["In this study, we're interested in how you group objects visually on the screen.",
-            "In each scene, you'll see several objects (typically boxes), spaced out in various ways, sometimes with color added.",
-            "For these scenes, you'll interact in two phases.",
-            "In the first phase, after you get a quick impression of the scene, you'll [click] to mark the rough center-points of the 'groups' of objects you perceive on the screen.",
-            "If you second-guess or mistakenly click, you can hit [backspace] to remove the most recent centerpoint marked.",
-            "Hitting the [spacebar] indicates you're done marking where the groups are located.",
-            "In the second phase of each scene, you'll go back and indicate which objects you perceive to be associated with each center-point you marked in the first phase.",
-            "Each group center you marked will pop up one at a time, and you'll then [click] the objects that make up its group. To de-select an object, [click] it again.",
-            "Hitting [spacebar] will move on to the next group center, or if you're done with them all, it will lead to the next scene.",
-            "While you group, consider that we're interested in your OWN perception-- if you say there's only one group, that's fine. If you say every object is in its own group, fine, too!",
-            "Try not to linger TOO long on each scene-- we're MOST interested in your very first impression of the visual situation, and there are no wrong answers, so don't think too hard about it!",
-            "You're now ready to begin. Hit [spacebar] to proceed to the first scene."
-            ]
+                              "In each scene, you'll see several objects (typically boxes), spaced out in various ways, sometimes with color added.",
+                              "For these scenes, you'll interact in two phases.",
+                              "In the first phase, after you get a quick impression of the scene, you'll [click] to mark the rough center-points of the 'groups' of objects you perceive on the screen.",
+                              "If you second-guess or mistakenly click, you can hit [backspace] to remove the most recent centerpoint marked.",
+                              "Hitting the [spacebar] indicates you're done marking where the groups are located.",
+                              "In the second phase of each scene, you'll go back and indicate which objects you perceive to be associated with each center-point you marked in the first phase.",
+                              "Each group center you marked will pop up one at a time, and you'll then [click] the objects that make up its group. To de-select an object, [click] it again.",
+                              "Hitting [spacebar] will move on to the next group center, or if you're done with them all, it will lead to the next scene.",
+                              "While you group, consider that we're interested in your OWN perception-- if you say there's only one group, that's fine. If you say every object is in its own group, fine, too!",
+                              "Try not to linger TOO long on each scene-- we're MOST interested in your very first impression of the visual situation, and there are no wrong answers, so don't think too hard about it!",
+                              "You're now ready to begin. Hit [spacebar] to proceed to the first scene."
+                              ]
 
         self.instruct_boxes = []
         self.instruct_centers = []
         self.instruct_prog = "( 1 / " + str(len(self.instruct_text)) + " )"
-        self.instruct_label = pyglet.text.Label(text = self.instruct_prog + "\n\n" + self.instruct_text[0],
-                                  x = window.width//2, y = window.height//2,
-                                  anchor_x = "center", anchor_y = "center",
-                                  color = (0,0,0,255), font_size = 36,
-                                  multiline = True, width = 0.5 * window.width, height = 0.6 * window.height)
+        self.instruct_label = pyglet.text.Label(text=self.instruct_prog + "\n\n" + self.instruct_text[0],
+                                                x=window.width//2, y=window.height//2,
+                                                anchor_x="center", anchor_y="center",
+                                                color=(0, 0, 0, 255), font_size=36,
+                                                multiline=True, width=0.5 * window.width, height=0.6 * window.height)
 
-        self.counting_hud = pyglet.text.Label(text = "mark group centers", x = window.width//2, y = window.height-20,
-                                  anchor_x = "center", anchor_y = "top",
-                                  color = (0,0,0,255), font_size = 25)
+        self.counting_hud = pyglet.text.Label(text="mark group centers", x=window.width//2, y=window.height-20,
+                                              anchor_x="center", anchor_y="top",
+                                              color=(0, 0, 0, 255), font_size=25)
         self.grouping_hud_text = "select group members: group "
-        self.grouping_hud = pyglet.text.Label(text = self.grouping_hud_text, x = window.width//2, y = window.height-20,
-                                  anchor_x = "center", anchor_y = "top",
-                                  color = (0,0,0,255), font_size = 25)
+        self.grouping_hud = pyglet.text.Label(text=self.grouping_hud_text, x=window.width//2, y=window.height-20,
+                                              anchor_x="center", anchor_y="top",
+                                              color=(0, 0, 0, 255), font_size=25)
 
-        self.final_text = pyglet.text.Label(text = "Task complete!", x = window.width//2, y = window.height//2,
-                                  anchor_x = "center", anchor_y = "center",
-                                  color = (0,0,0,255), font_size = 50)
+        self.final_text = pyglet.text.Label(text="Task complete!", x=window.width//2, y=window.height//2,
+                                            anchor_x="center", anchor_y="center",
+                                            color=(0, 0, 0, 255), font_size=50)
 
+        self.screenshot_text = pyglet.text.Label(text="Saving trial data...", x=window.width//2, y=(window.height)//4,
+                                                 anchor_x="center", anchor_y="center",
+                                                 color=(0, 0, 0, 255), font_size=18)
 
     def draw(self):
 
-
         s = self.scenes[self.scene_ix]
-
 
         if self.state == GroupingTask.STATE_GROUP:
             s.draw_boxes(self.state, self.dim_factor)
@@ -327,24 +326,26 @@ class GroupingTask():
             self.instruct_label.draw()
         elif self.state == GroupingTask.STATE_COMPLETE:
             self.final_text.draw()
-
+            if self.screenshots:
+                self.screenshot_text.draw()
 
     def draw_drag(self):
-        self.scenes[self.scene_ix].draw_drag(self.mouse_x, self.mouse_y, self.drag_anchor_x, self.drag_anchor_y)
+        self.scenes[self.scene_ix].draw_drag(
+            self.mouse_x, self.mouse_y, self.drag_anchor_x, self.drag_anchor_y)
 
     def update_mouse(self, mx, my):
         self.mouse_x = mx
         self.mouse_y = my
 
-    def log_evt(self, evt_id, evt_data1 = "NA", evt_data2 = "NA"):
-        self.evt_log.log(ts = time.time() - self.start_time,
-                         SID = self.SID,
-                         scene_id = self.scenes[self.scene_ix].id,
-                         group_id = self.scenes[self.scene_ix].group_num,
-                         state = GroupingTask.STATES[self.state],
-                         evt_id = evt_id,
-                         evt_data1 = evt_data1,
-                         evt_data2 = evt_data2)
+    def log_evt(self, evt_id, evt_data1="NA", evt_data2="NA"):
+        self.evt_log.log(ts=time.time() - self.start_time,
+                         SID=self.SID,
+                         scene_id=self.scenes[self.scene_ix].id,
+                         group_id=self.scenes[self.scene_ix].group_num,
+                         state=GroupingTask.STATES[self.state],
+                         evt_id=evt_id,
+                         evt_data1=evt_data1,
+                         evt_data2=evt_data2)
 
     def log_trial(self):
         scene = self.scenes[self.scene_ix]
@@ -352,7 +353,7 @@ class GroupingTask():
         groups = {}
         ungrouped = []
 
-        for g in range(0,scene.group_num + 1):
+        for g in range(0, scene.group_num + 1):
             groups[g] = []
 
         for b in scene.boxes:
@@ -361,15 +362,15 @@ class GroupingTask():
             else:
                 groups[b.group].append(b.id)
 
-        self.trial_log.log(ts = time.time() - self.start_time,
-                           SID = self.SID,
-                           scene_id = self.scenes[self.scene_ix].id,
-                           trial_duration = time.time() - self.trial_start_time,
-                           count_duration = self.group_start_time - self.count_start_time,
-                           grouping_duration = time.time() - self.group_start_time,
-                           group_count = len(groups),
-                           group_membership = groups,
-                           ungrouped_items = ungrouped)
+        self.trial_log.log(ts=time.time() - self.start_time,
+                           SID=self.SID,
+                           scene_id=self.scenes[self.scene_ix].id,
+                           trial_duration=time.time() - self.trial_start_time,
+                           count_duration=self.group_start_time - self.count_start_time,
+                           grouping_duration=time.time() - self.group_start_time,
+                           group_count=len(groups),
+                           group_membership=groups,
+                           ungrouped_items=ungrouped)
 
 #     def log_scenes(self):
 #         for sx in range(len(self.scenes)):
@@ -387,7 +388,7 @@ class GroupingTask():
         fn = "/scenes__" + self.datetime + "__ " + self.SID + ".json"
         if not os.path.exists(datadir + subdir):
             os.makedirs(datadir + subdir)
-        f = open(datadir + subdir + fn,'w')
+        f = open(datadir + subdir + fn, 'w')
 
         dct = {}
 
@@ -415,7 +416,8 @@ class GroupingTask():
     def hex_to_rgb(self, value):
         value = value.lstrip('#')
         lv = len(value)
-        out = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+        out = tuple(int(value[i:i + lv // 3], 16)
+                    for i in range(0, lv, lv // 3))
         #print(out)
         return out
 
@@ -438,7 +440,7 @@ class GroupingTask():
     def read_scenes_json(self, name):
         filepath = self.scene_dir_root + "/" + self.scene_dir + "/" + name + ".json"
         print("reading filepath: " + filepath)
-        f = open( filepath,'r')
+        f = open(filepath, 'r')
         text = f.read()
 
         scenes = json.loads(text)
@@ -446,7 +448,7 @@ class GroupingTask():
         #for each scene
         s_ix = 0
         for scene_id in list(scenes):
-            newscene = Scene(scene_data = scenes[scene_id], id = scene_id)
+            newscene = Scene(scene_data=scenes[scene_id], id=scene_id)
             s_ix += 1
             self.scenes.append(newscene)
 
@@ -506,13 +508,12 @@ class GroupingTask():
                 boxname = "box" + str(boxid)
                 x = left + width // 2
                 y = window.height - (top + height // 2)
-                data[boxname] = {'center-x':x,'center-y':y,'width':width,'height':height,
-                                 'stroke_c':stroke_c,'fill_c':fill_c,'alpha':255}
+                data[boxname] = {'center-x': x, 'center-y': y, 'width': width, 'height': height,
+                                 'stroke_c': stroke_c, 'fill_c': fill_c, 'alpha': 255}
                 boxid += 1
 
-
         #create a new scene out of them
-        self.scenes.append(Scene(scene_data = data, id = name))
+        self.scenes.append(Scene(scene_data=data, id=name))
 
     def replace_color_hex(self, color):
         if(color in self.color_replacements):
@@ -524,7 +525,8 @@ class GroupingTask():
 
         colswap = self.colors_to_balance
 
-        swap_vector = ([0] * int(len(self.scenes)/2)) + ([1] * int(len(self.scenes)/2))
+        swap_vector = ([0] * int(len(self.scenes)/2)) + \
+            ([1] * int(len(self.scenes)/2))
         random.shuffle(swap_vector)
         swapped = []
         for ix, swap in enumerate(swap_vector):
@@ -543,41 +545,45 @@ class GroupingTask():
                 swapped.append(ix)
         print("swapped colors for scenes: " + str(swapped))
 
-
     def click_select(self, mx, my):
         clicked = self.scenes[self.scene_ix].clicked(mx, my)
 
-        self.log_evt(evt_id = "click_selection", evt_data1 = [mx,my], evt_data2 = clicked)
+        self.log_evt(evt_id="click_selection", evt_data1=[
+                     mx, my], evt_data2=clicked)
 
     def drag_start(self, mx, my):
         self.dragging = True
         self.drag_anchor_x = mx
         self.drag_anchor_y = my
 
-        self.log_evt(evt_id = "drag_started", evt_data1 = [self.drag_anchor_x, self.drag_anchor_y])
-
+        self.log_evt(evt_id="drag_started", evt_data1=[
+                     self.drag_anchor_x, self.drag_anchor_y])
 
     def drag_select(self):
         self.dragging = False
-        boxes_selected = self.scenes[self.scene_ix].dragged(self.drag_anchor_x, self.drag_anchor_y, self.mouse_x, self.mouse_y)
+        boxes_selected = self.scenes[self.scene_ix].dragged(
+            self.drag_anchor_x, self.drag_anchor_y, self.mouse_x, self.mouse_y)
 
-        self.log_evt(evt_id = "drag_select",evt_data1 = [self.drag_anchor_x, self.drag_anchor_y, self.mouse_x, self.mouse_y],evt_data2 = boxes_selected)
+        self.log_evt(evt_id="drag_select", evt_data1=[
+                     self.drag_anchor_x, self.drag_anchor_y, self.mouse_x, self.mouse_y], evt_data2=boxes_selected)
 
     def undo_selection(self):
         deselected = self.scenes[self.scene_ix].undo_selection()
 
-        self.log_evt(evt_id = "group_deselected", evt_data2 = deselected)
+        self.log_evt(evt_id="group_deselected", evt_data2=deselected)
 
     def new_center(self, mx, my):
         new_center = self.scenes[self.scene_ix].new_center(mx, my)
 
-        self.log_evt(evt_id = "center_marked", evt_data1 = new_center[0:2], evt_data2 = [new_center[2]])
+        self.log_evt(evt_id="center_marked",
+                     evt_data1=new_center[0:2], evt_data2=[new_center[2]])
 
     def undo_center(self):
         deleted = self.scenes[self.scene_ix].undo_center()
 
         if deleted:
-            self.log_evt(evt_id = "center_deleted", evt_data1 = deleted[0:2], evt_data2 = [-deleted[2]])
+            self.log_evt(evt_id="center_deleted",
+                         evt_data1=deleted[0:2], evt_data2=[-deleted[2]])
 
     def advance(self):
         s = self.scenes[self.scene_ix]
@@ -586,8 +592,10 @@ class GroupingTask():
             #either proceed to the next of the remaining instructions...
             if self.instruct_step < len(self.instruct_text)-1:
                 self.instruct_step += 1
-                self.instruct_prog = "( " + str(self.instruct_step + 1) + " / " + str(len(self.instruct_text)) + " )"
-                self.instruct_label.text = self.instruct_prog + "\n\n" + self.instruct_text[self.instruct_step]
+                self.instruct_prog = "( " + str(self.instruct_step + 1) + \
+                    " / " + str(len(self.instruct_text)) + " )"
+                self.instruct_label.text = self.instruct_prog + \
+                    "\n\n" + self.instruct_text[self.instruct_step]
             #or begin the first trial of the task
             else:
                 self.trial_start_time = time.time()
@@ -601,9 +609,9 @@ class GroupingTask():
                 self.state = GroupingTask.STATE_GROUP
                 s.group_num = 0
                 self.group_start_time = time.time()
-                self.grouping_hud.text = self.grouping_hud_text + str(s.group_num + 1)
-                self.log_evt(evt_id = "begin_grouping")
-
+                self.grouping_hud.text = self.grouping_hud_text + \
+                    str(s.group_num + 1)
+                self.log_evt(evt_id="begin_grouping")
 
         #if we're dealing with grouping
         elif self.state == GroupingTask.STATE_GROUP:
@@ -613,24 +621,29 @@ class GroupingTask():
             #otherwise, go to the next group
             else:
                 s.group_num += 1
-                self.grouping_hud.text = self.grouping_hud_text + str(s.group_num+ 1)
-                self.log_evt(evt_id = "next_group")
+                self.grouping_hud.text = self.grouping_hud_text + \
+                    str(s.group_num + 1)
+                self.log_evt(evt_id="next_group")
 
     def next_scene(self):
+        print("logging trial " + str(self.scene_ix) + "...")
         self.log_trial()
-        if self.screenshots:
-            self.do_screenshot()
+        print("done.")
+        #if self.screenshots:
+        #self.do_screenshot(self.scene_ix)
         #if we're all out of scenes, we're done
         if (self.scene_ix + 1) >= len(self.scenes):
             self.state = GroupingTask.STATE_COMPLETE
-            self.log_evt(evt_id = "task_complete")
+            self.log_evt(evt_id="task_complete")
+            pyglet.clock.schedule_once(
+                lambda x: self.do_all_screenshots(), 0.1)
         else:
             self.state = GroupingTask.STATE_COUNT
             self.scene_ix += 1
             self.trial_start_time = time.time()
             self.count_start_time = time.time()
             self.group_start_time = None
-            self.log_evt(evt_id = "next_scene")
+            self.log_evt(evt_id="next_scene")
 
     def prev_scene(self):
         self.scene_ix = max(self.scene_ix - 1, 0)
@@ -638,23 +651,31 @@ class GroupingTask():
     def get_time(self):
         return time.time() - self.start_time
 
-    def do_screenshot(self):
-        s = self.scenes[self.scene_ix]
+    def do_screenshot(self, scene_ix):
+        print("screenshotting scene " + str(scene_ix) + "...")
+        s = self.scenes[scene_ix]
         window.clear()
-        s.draw_boxes(self.state, 1, screenshot = True)
-        s.draw_centers(screenshot = True)
-        self.evt_log.screenshot(self.scene_ix, s.id)
+        s.draw_boxes(self.state, 1, screenshot=True)
+        s.draw_centers(screenshot=True)
+        self.evt_log.screenshot(scene_ix, s.id)
+        print("done.")
+
+    def do_all_screenshots(self):
+        if self.screenshots:
+            for ix in range(0, len(self.scenes)):
+                self.do_screenshot(ix)
+        self.screenshot_text.text = "Saving trial data... complete! Press [ESC] to close."
 
 
 class Scene():
 
-    def __init__(self, scene_data, id = None, centered = True, flip_v = False, flip_h = False):
+    def __init__(self, scene_data, id=None, centered=True, flip_v=False, flip_h=False):
         self.boxes = []
         self.read_scene_data(scene_data)
 
         self.l = 10000000
         self.r = -10000000
-        self.b =  10000000
+        self.b = 10000000
         self.t = -10000000
         self.w = 0
         self.h = 0
@@ -662,7 +683,6 @@ class Scene():
         self.id = id
 
         self.get_bounding_box()
-
 
         if centered:
             self.center_scene()
@@ -683,7 +703,8 @@ class Scene():
             stroke_c = s[box]["stroke_c"]
             fill_c = s[box]["fill_c"]
             alpha = s[box]["alpha"]
-            self.boxes.append(Box(x,y,w,h, id = box, stroke_c = stroke_c, fill_c = fill_c, alpha = alpha))
+            self.boxes.append(
+                Box(x, y, w, h, id=box, stroke_c=stroke_c, fill_c=fill_c, alpha=alpha))
             box_ID += 1
 
     def get_bounding_box(self):
@@ -697,33 +718,29 @@ class Scene():
         self.h = self.t - self.b
 
     def center_scene(self):
-        offset = ( (window.width  / 2) - (self.w/2) - self.l,
-                   (window.height / 2) - (self.h/2) - self.b)
+        offset = ((window.width / 2) - (self.w/2) - self.l,
+                  (window.height / 2) - (self.h/2) - self.b)
         for b in self.boxes:
             b.move(offset)
 
-
-
-
-
     def draw_drag(self, x1, y1, x2, y2):
         #color = colors[list(colors)[self.group_num % len(colors)]] + (100,)
-        color = (128,128,128,100)
+        color = (128, 128, 128, 100)
         pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
-            ("v2f", [x1, y1,
-                     x1, y2,
-                     x2, y2,
-                     x2, y1]),
-            ("c4B", color + color + color + color)
-            )
+                             ("v2f", [x1, y1,
+                                      x1, y2,
+                                      x2, y2,
+                                      x2, y1]),
+                             ("c4B", color + color + color + color)
+                             )
 
-    def draw_boxes(self, state, dim, screenshot = False):
+    def draw_boxes(self, state, dim, screenshot=False):
         for b in self.boxes:
-            b.draw(self.group_num, state, dim, screenshot = screenshot)
+            b.draw(self.group_num, state, dim, screenshot=screenshot)
 
-    def draw_centers(self, screenshot = False):
+    def draw_centers(self, screenshot=False):
         for c in self.centers:
-            c.draw(screenshot = screenshot)
+            c.draw(screenshot=screenshot)
 
     def draw_current_center(self):
         if self.group_num < len(self.centers):
@@ -754,7 +771,7 @@ class Scene():
         return deselected
 
     def new_center(self, mx, my):
-        new_center = Center(mx, my, id = self.center_id)
+        new_center = Center(mx, my, id=self.center_id)
         self.centers.append(new_center)
         self.center_id += 1
 
@@ -771,33 +788,35 @@ class Scene():
         else:
             return None
 
+
 class Center():
 
-    def __init__(self, x, y, id = -1):
+    def __init__(self, x, y, id=-1):
         self.x = x
         self.y = y
         self.size = 10
         self.id = id
-        self.border_color = (0,0,0,255)
+        self.border_color = (0, 0, 0, 255)
         #self.label_color = color = colors[list(colors)[self.id%len(colors)]] + (255,)
-        self.label_color = (255,255,255,255)
+        self.label_color = (255, 255, 255, 255)
 
-        self.border = pyglet.text.Label('·', font_name = 'Arial',
-                                       font_size = 45, bold = True,
-                                       x = self.x, y = self.y + 6,
-                                       color = self.border_color,
-                                       anchor_x = 'center', anchor_y = 'center')
-        self.label = pyglet.text.Label('·', font_name = 'Arial',
-                                       font_size = 40, bold = False,
-                                       x = self.x, y = self.y + 6,
-                                       color = self.label_color,
-                                       anchor_x = 'center', anchor_y = 'center')
+        self.border = pyglet.text.Label('·', font_name='Arial',
+                                        font_size=45, bold=True,
+                                        x=self.x, y=self.y + 6,
+                                        color=self.border_color,
+                                        anchor_x='center', anchor_y='center')
+        self.label = pyglet.text.Label('·', font_name='Arial',
+                                       font_size=40, bold=False,
+                                       x=self.x, y=self.y + 6,
+                                       color=self.label_color,
+                                       anchor_x='center', anchor_y='center')
 
-    def draw(self, screenshot = False):
+    def draw(self, screenshot=False):
         #c = colors[list(colors)[self.id%len(colors)]] + (255,)
         if(screenshot):
             if self.id > -1:
-                self.label.color = colors[list(colors)[self.id%len(colors)]] + (255,)
+                self.label.color = colors[list(
+                    colors)[self.id % len(colors)]] + (255,)
 
         s = self.size
 
@@ -814,9 +833,10 @@ class Center():
         #    ("c4B", c + c + c + c)
         #    )
 
+
 class Box():
 
-    def __init__(self, x, y, w, h, id = -1, stroke_c = (0,0,0), fill_c = (255,255,255), alpha = 255):
+    def __init__(self, x, y, w, h, id=-1, stroke_c=(0, 0, 0), fill_c=(255, 255, 255), alpha=255):
         self.id = id
         self.x = x
         self.y = y
@@ -829,57 +849,61 @@ class Box():
         self.stroke_c = stroke_c
         self.fill_c = fill_c
         self.alpha = alpha
-        self.selected_color = (100,100,250,255)
+        self.selected_color = (100, 100, 250, 255)
         self.group = -1
         self.selected = False
         self.border_width = 2
         #self.border_color = (0,0,0,255)
-        self.border_color = (random.randint(0,255),random.randint(0,255),random.randint(0,255),255)
+        self.border_color = (random.randint(0, 255), random.randint(
+            0, 255), random.randint(0, 255), 255)
 
-
-    def draw(self, group, state, dim, screenshot = False):
+    def draw(self, group, state, dim, screenshot=False):
 
         #if we're in the center counting phase, draw them normally
         #if (self.group != -1) or (state == GroupingTask.STATE_COUNT):
         if (state == GroupingTask.STATE_COUNT) or (self.group == group):
             #fc = colors[list(colors)[self.group % len(colors)]] + (self.alpha,)
             fc = (self.fill_c[0], self.fill_c[1], self.fill_c[2], self.alpha)
-            sc = (self.stroke_c[0], self.stroke_c[1], self.stroke_c[2], self.alpha)
+            sc = (self.stroke_c[0], self.stroke_c[1],
+                  self.stroke_c[2], self.alpha)
         else:
             # if ungrouped, then show it dimmed.
             if self.group == -1:
-                fc = (self.fill_c[0], self.fill_c[1], self.fill_c[2], int(self.alpha / dim))
-                sc = (self.stroke_c[0], self.stroke_c[1], self.stroke_c[2], int(self.alpha / dim))
+                fc = (self.fill_c[0], self.fill_c[1],
+                      self.fill_c[2], int(self.alpha / dim))
+                sc = (self.stroke_c[0], self.stroke_c[1],
+                      self.stroke_c[2], int(self.alpha / dim))
             elif self.group < group:
-                fc = (self.fill_c[0], self.fill_c[1], self.fill_c[2], int(self.alpha / (dim*dim)))
-                sc = (self.stroke_c[0], self.stroke_c[1], self.stroke_c[2], int(self.alpha / (dim*dim)))
+                fc = (self.fill_c[0], self.fill_c[1],
+                      self.fill_c[2], int(self.alpha / (dim*dim)))
+                sc = (self.stroke_c[0], self.stroke_c[1],
+                      self.stroke_c[2], int(self.alpha / (dim*dim)))
 
         if screenshot:
             if self.group > -1:
-                sc = colors[list(colors)[self.group%len(colors)]] + (255,)
+                sc = colors[list(colors)[self.group % len(colors)]] + (255,)
 
         pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
-            ("v2f", [self.l, self.b,
-                     self.l, self.t,
-                     self.r, self.t,
-                     self.r, self.b]),
-            ("c4B", fc + fc + fc + fc)
-        )
+                             ("v2f", [self.l, self.b,
+                                      self.l, self.t,
+                                      self.r, self.t,
+                                      self.r, self.b]),
+                             ("c4B", fc + fc + fc + fc)
+                             )
 
         #draw the border
         pyglet.gl.glLineWidth(4)
         pyglet.graphics.draw(8, pyglet.gl.GL_LINES,
-            ("v2f", [self.l, self.b,
-                     self.l, self.t,
-                     self.l, self.t,
-                     self.r, self.t,
-                     self.r, self.t,
-                     self.r, self.b,
-                     self.r, self.b,
-                     self.l, self.b]),
-            ("c4B", sc + sc + sc + sc + sc + sc + sc + sc)
-        )
-
+                             ("v2f", [self.l, self.b,
+                                      self.l, self.t,
+                                      self.l, self.t,
+                                      self.r, self.t,
+                                      self.r, self.t,
+                                      self.r, self.b,
+                                      self.r, self.b,
+                                      self.l, self.b]),
+                             ("c4B", sc + sc + sc + sc + sc + sc + sc + sc)
+                             )
 
     def move(self, offset):
         self.x += offset[0]
@@ -892,7 +916,10 @@ class Box():
 
     def clicked(self, mx, my, group):
         if mx <= self.r and mx >= self.l and my <= self.t and my >= self.b:
-            self.group = group if self.group == -1 else -1
+            if self.group == -1:
+                self.group = group
+            elif self.group == group:
+                self.group = -1
             return self.id if self.group != -1 else "-" + self.id
         else:
             return None
@@ -914,6 +941,7 @@ class Box():
         else:
             return None
 
+
 # main thread execution
 if __name__ == "__main__":
 
@@ -924,13 +952,13 @@ if __name__ == "__main__":
 
     window = pyglet.window.Window(fullscreen=True)
 
-    pyglet.gl.glClearColor(1,1,1,1)
+    pyglet.gl.glClearColor(1, 1, 1, 1)
 
     pyglet.gl.glLineWidth(15)
 
     pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
-    pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-
+    pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
+                          pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
     #defining callback functions
     #  seems to need to happen after the window is defined, but before the run function is called
@@ -942,7 +970,6 @@ if __name__ == "__main__":
 
         window.clear()
         task.draw()
-
 
     @window.event
     def on_key_press(symbol, modifiers):
@@ -961,7 +988,6 @@ if __name__ == "__main__":
         elif task.state == GroupingTask.STATE_GROUP:
             if symbol == pyglet.window.key.BACKSPACE:
                 task.undo_selection()
-
 
     #@window.event
     #def on_mouse_press(x, y, button, modifiers):
@@ -985,8 +1011,6 @@ if __name__ == "__main__":
             else:
                 task.click_select(x, y)
 
-
-
     @window.event
     def on_mouse_drag(x, y, dx, dy, button, modifiers):
         if task.state == GroupingTask.STATE_GROUP:
@@ -994,15 +1018,13 @@ if __name__ == "__main__":
                 #task.drag_start(x,y)
                 5
             else:
-                task.update_mouse(x,y)
-
+                task.update_mouse(x, y)
 
     @window.event
     def on_mouse_motion(x, y, dx, dy):
-        task.update_mouse(x,y)
+        task.update_mouse(x, y)
 
     #pyglet.clock.schedule_interval(update, 1/120.0)
-
 
     if len(sys.argv) > 1:
         folder = sys.argv[1]
@@ -1010,6 +1032,11 @@ if __name__ == "__main__":
         folder = "practice"
 
     #task = GroupingTask(window, subject_id = id_input, scene_dir = "default")
-    task = GroupingTask(window, subject_id = id_input, scene_dir = folder)
+    task = GroupingTask(window, subject_id=id_input, scene_dir=folder)
 
     pyglet.app.run()
+    #pyglet.app.run()
+    #pyglet.app.run()
+    #pyglet.app.run()
+    #pyglet.app.run()
+    #pyglet.app.run()
