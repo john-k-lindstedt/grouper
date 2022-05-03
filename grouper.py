@@ -305,7 +305,7 @@ class GroupingTask():
                                               anchor_x="center", anchor_y="top",
                                               color=(0, 0, 0, 255), font_size=25)
 
-        self.final_text = pyglet.text.Label(text="Task complete!", x=window.width//2, y=window.height//2,
+        self.final_text = pyglet.text.Label(text="Task complete! Thank you!", x=window.width//2, y=window.height//2,
                                             anchor_x="center", anchor_y="center",
                                             color=(0, 0, 0, 255), font_size=50)
 
@@ -313,7 +313,7 @@ class GroupingTask():
                                             anchor_x="center", anchor_y="center",
                                             color=(0, 0, 0, 255), font_size=36)
 
-        self.screenshot_text = pyglet.text.Label(text="Saving trial data... (please refrain from clicking or pressing keys).", x=window.width//2, y=(window.height)//4,
+        self.screenshot_text = pyglet.text.Label(text="Saving trial image data... (please refrain from clicking or pressing keys, Windows gets real weird about that.)", x=window.width//2, y=(window.height)//4,
                                                  anchor_x="center", anchor_y="center",
                                                  color=(0, 0, 0, 255), font_size=18)
 
