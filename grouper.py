@@ -270,16 +270,16 @@ class GroupingTask():
 
         self.instruct_step = 0
 
-        self.instruct_text = ["In this study, we're interested in how you group objects visually on the screen.",
+        self.instruct_text = ["In this study, we're interested in how you mentally group visual objects on the screen.",
                               "In each scene, you'll see several objects (typically boxes), spaced out in various ways, sometimes with color added.",
-                              "For these scenes, you'll interact in two phases.",
+                              "For these scenes, you'll interact in two phases-- marking the centers of these groups, then marking which objects belong to each group.",
                               "In the first phase, after you get a quick impression of the scene, you'll [click] to mark the rough center-points of the 'groups' of objects you perceive on the screen.",
                               "If you second-guess or mistakenly click, you can hit [backspace] to remove the most recent centerpoint marked.",
                               "Hitting the [spacebar] indicates you're done marking where the groups are located.",
                               "In the second phase of each scene, you'll go back and indicate which objects you perceive to be associated with each center-point you marked in the first phase.",
                               "Each group center you marked will pop up one at a time, and you'll then [click] the objects that make up its group. To de-select an object, [click] it again.",
                               "Hitting [spacebar] will move on to the next group center, or if you're done with them all, it will lead to the next scene.",
-                              "While you group, consider that we're interested in your OWN perception-- just make sure to group every object on the screen somehow. If you say there's only one group containing all of the objects, that's fine. If you say every object is in its own group, that's fine, too!",
+                              "While you group, consider that we're interested in your OWN perception-- just be sure to group every object on the screen. If you say there's only one group containing all of the objects, that's fine. If you say every object is in its own group, that's fine, too!",
                               "Try not to linger TOO long on each scene-- we're MOST interested in your very first impression of the visual situation, and there are no wrong answers, so don't think too hard about it!",
                               "You're now ready to begin. Hit [spacebar] to proceed to the first scene."
                               ]
