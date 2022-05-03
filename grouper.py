@@ -279,7 +279,7 @@ class GroupingTask():
                               "In the second phase of each scene, you'll go back and indicate which objects you perceive to be associated with each center-point you marked in the first phase.",
                               "Each group center you marked will pop up one at a time, and you'll then [click] the objects that make up its group. To de-select an object, [click] it again.",
                               "Hitting [spacebar] will move on to the next group center, or if you're done with them all, it will lead to the next scene.",
-                              "While you group, consider that we're interested in your OWN perception-- if you say there's only one group, that's fine. If you say every object is in its own group, fine, too!",
+                              "While you group, consider that we're interested in your OWN perception-- just make sure to group every object on the screen somehow. If you say there's only one group containing all of the objects, that's fine. If you say every object is in its own group, that's fine, too!",
                               "Try not to linger TOO long on each scene-- we're MOST interested in your very first impression of the visual situation, and there are no wrong answers, so don't think too hard about it!",
                               "You're now ready to begin. Hit [spacebar] to proceed to the first scene."
                               ]
@@ -305,7 +305,11 @@ class GroupingTask():
                                             anchor_x="center", anchor_y="center",
                                             color=(0, 0, 0, 255), font_size=50)
 
-        self.screenshot_text = pyglet.text.Label(text="Saving trial data...", x=window.width//2, y=(window.height)//4,
+        self.experimenter_text = pyglet.text.Label(text="You may now retrieve your experimenter.", x=window.width//2, y=window.height * 3 // 8,
+                                            anchor_x="center", anchor_y="center",
+                                            color=(0, 0, 0, 255), font_size=36)
+
+        self.screenshot_text = pyglet.text.Label(text="Saving trial data... (please refrain from clicking or pressing keys).", x=window.width//2, y=(window.height)//4,
                                                  anchor_x="center", anchor_y="center",
                                                  color=(0, 0, 0, 255), font_size=18)
 
@@ -327,6 +331,7 @@ class GroupingTask():
             self.instruct_label.draw()
         elif self.state == GroupingTask.STATE_COMPLETE:
             self.final_text.draw()
+            self.experimenter_text.draw()
             if self.screenshots:
                 self.screenshot_text.draw()
 
