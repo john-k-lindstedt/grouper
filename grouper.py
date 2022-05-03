@@ -204,7 +204,7 @@ class GroupingTask():
 
     trial_log_header = ['ts', 'SID', 'scene_id', 'trial_duration', 'count_duration',
                         'grouping_duration', 'group_count', 'crosscolor_groups','crossgap_groups',
-                        'group_membership', 'ungrouped_items']
+                        'group_centers','group_membership', 'ungrouped_items']
 
     scene_log_header = ['scene_id', 'box_id',
                         'x', 'y', 'w', 'h', 'l', 'r', 'b', 't']
@@ -293,6 +293,10 @@ class GroupingTask():
                                                 color=(0, 0, 0, 255), font_size=36,
                                                 multiline=True, width=0.5 * window.width, height=0.6 * window.height)
 
+        self.guide_label = pyglet.text.Label(text="[Spacebar] to continue, [Backspace] to go back", x=window.width//2, y=window.height//8,
+                                              anchor_x="center", anchor_y="top",
+                                              color=(0, 0, 0, 255), font_size=18)
+
         self.counting_hud = pyglet.text.Label(text="mark group centers", x=window.width//2, y=window.height-20,
                                               anchor_x="center", anchor_y="top",
                                               color=(0, 0, 0, 255), font_size=25)
@@ -329,6 +333,7 @@ class GroupingTask():
             self.counting_hud.draw()
         elif self.state == GroupingTask.STATE_INSTRUCT:
             self.instruct_label.draw()
+            self.guide_label.draw()
         elif self.state == GroupingTask.STATE_COMPLETE:
             self.final_text.draw()
             self.experimenter_text.draw()
@@ -403,7 +408,10 @@ class GroupingTask():
                 if max_gap > 0.25:
                     crossgap_groups += 1
 
+        centers = {}
 
+        for c in scene.centers:
+            centers[c.id] = (c.x, c.y)
 
         self.trial_log.log(ts=time.time() - self.start_time,
                            SID=self.SID,
@@ -414,6 +422,7 @@ class GroupingTask():
                            group_count=len(groups),
                            crosscolor_groups = crosscolor_groups,
                            crossgap_groups = crossgap_groups,
+                           group_centers=centers,
                            group_membership=groups,
                            ungrouped_items=ungrouped)
 
@@ -630,6 +639,18 @@ class GroupingTask():
             self.log_evt(evt_id="center_deleted",
                          evt_data1=deleted[0:2], evt_data2=[-deleted[2]])
 
+    def instruct_back(self):
+        #decrement
+        if self.instruct_step > 0:
+            self.instruct_step = max(0, task.instruct_step - 1)
+            self.log_evt(evt_id="instruct",evt_data1="back",evt_data2=self.instruct_step)
+
+        #update
+        self.instruct_prog = "( " + str(self.instruct_step + 1) + \
+            " / " + str(len(self.instruct_text)) + " )"
+        self.instruct_label.text = self.instruct_prog + \
+            "\n\n" + self.instruct_text[self.instruct_step]
+
     def advance(self):
         s = self.scenes[self.scene_ix]
 
@@ -641,6 +662,7 @@ class GroupingTask():
                     " / " + str(len(self.instruct_text)) + " )"
                 self.instruct_label.text = self.instruct_prog + \
                     "\n\n" + self.instruct_text[self.instruct_step]
+                self.log_evt(evt_id="instruct",evt_data1="next",evt_data2=self.instruct_step)
             #or begin the first trial of the task
             else:
                 self.trial_start_time = time.time()
@@ -655,7 +677,7 @@ class GroupingTask():
                 s.group_num = 0
                 self.group_start_time = time.time()
                 self.grouping_hud.text = self.grouping_hud_text + \
-                    str(s.group_num + 1)
+                    str(s.group_num + 1) + " of " + str(len(s.centers))
                 self.log_evt(evt_id="begin_grouping")
 
         #if we're dealing with grouping
@@ -667,7 +689,7 @@ class GroupingTask():
             else:
                 s.group_num += 1
                 self.grouping_hud.text = self.grouping_hud_text + \
-                    str(s.group_num + 1)
+                    str(s.group_num + 1) + " of " + str(len(s.centers))
                 self.log_evt(evt_id="next_group")
 
     def next_scene(self):
@@ -680,6 +702,8 @@ class GroupingTask():
         if (self.scene_ix + 1) >= len(self.scenes):
             self.state = GroupingTask.STATE_COMPLETE
             self.log_evt(evt_id="task_complete")
+            self.evt_log.close_log()
+            self.trial_log.close_log()
             pyglet.clock.schedule_once(
                 lambda x: self.do_all_screenshots(), 0.1)
         else:
@@ -1035,6 +1059,10 @@ if __name__ == "__main__":
         elif task.state == GroupingTask.STATE_GROUP:
             if symbol == pyglet.window.key.BACKSPACE:
                 task.undo_selection()
+
+        elif task.state == GroupingTask.STATE_INSTRUCT:
+            if symbol == pyglet.window.key.BACKSPACE:
+                task.instruct_back()
 
     #@window.event
     #def on_mouse_press(x, y, button, modifiers):
