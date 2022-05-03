@@ -203,7 +203,8 @@ class GroupingTask():
                         'state', 'evt_id', 'evt_data1', 'evt_data2']
 
     trial_log_header = ['ts', 'SID', 'scene_id', 'trial_duration', 'count_duration',
-                        'grouping_duration', 'group_count', 'group_membership', 'ungrouped_items']
+                        'grouping_duration', 'group_count', 'crosscolor_groups','crossgap_groups',
+                        'group_membership', 'ungrouped_items']
 
     scene_log_header = ['scene_id', 'box_id',
                         'x', 'y', 'w', 'h', 'l', 'r', 'b', 't']
@@ -356,11 +357,47 @@ class GroupingTask():
         for g in range(0, scene.group_num + 1):
             groups[g] = []
 
-        for b in scene.boxes:
+        for i in range(0, len(scene.boxes)):
+            b = scene.boxes[i]
+
+            next = None
+            if i+1 < len(scene.boxes):
+                next = scene.boxes[i+1]
+
+            gap = 0
+            if next:
+                gap = (next.l - b.r) / b.w
+
             if b.group == -1:
                 ungrouped.append(b.id)
             else:
-                groups[b.group].append(b.id)
+                groups[b.group].append((b.id, b.fill_c, gap))
+
+        crosscolor_groups = 0
+        crossgap_groups = 0
+
+        for g in range(0,len(groups)):
+            first_color = groups[g][0][1]
+            max_gap = 0
+
+            colorcross = 0
+
+            #check all the boxes' color values against the first
+            for b in groups[g][1:]:
+                if b[1] != first_color:
+                    colorcross += 1
+
+            #check all but the last box's gap values
+            for b in groups[g][:-1]:
+                max_gap = max(max_gap, b[2])
+
+            if colorcross > 0:
+                crosscolor_groups += 1
+
+            if max_gap > 0.25:
+                crossgap_groups += 1
+
+
 
         self.trial_log.log(ts=time.time() - self.start_time,
                            SID=self.SID,
@@ -369,6 +406,8 @@ class GroupingTask():
                            count_duration=self.group_start_time - self.count_start_time,
                            grouping_duration=time.time() - self.group_start_time,
                            group_count=len(groups),
+                           crosscolor_groups = crosscolor_groups,
+                           crossgap_groups = crossgap_groups,
                            group_membership=groups,
                            ungrouped_items=ungrouped)
 
@@ -787,6 +826,8 @@ class Scene():
             return (deleted.x, deleted.y, deleted.id)
         else:
             return None
+
+
 
 
 class Center():
