@@ -1,3 +1,3 @@
 @ECHO OFF
 cd %~dp0
-python grouper.py practice
+cmd /k python grouper.py practice

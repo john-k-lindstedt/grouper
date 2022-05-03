@@ -1,3 +1,3 @@
 @ECHO OFF
 cd %~dp0
-python grouper.py color_proximity_1
+cmd /k python grouper.py color_proximity_1
