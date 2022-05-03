@@ -733,7 +733,7 @@ class GroupingTask():
         if self.screenshots:
             for ix in range(0, len(self.scenes)):
                 self.do_screenshot(ix)
-        self.screenshot_text.text = "Saving trial data... complete! Press [ESC] to close."
+        self.screenshot_text.text = "Saving trial image data... complete! Press [ESC] to close."
 
 
 class Scene():
