@@ -377,25 +377,26 @@ class GroupingTask():
         crossgap_groups = 0
 
         for g in range(0,len(groups)):
-            first_color = groups[g][0][1]
-            max_gap = 0
+            if len(groups[g]) != 0:
+                first_color = groups[g][0][1]
+                max_gap = 0
 
-            colorcross = 0
+                colorcross = 0
 
-            #check all the boxes' color values against the first
-            for b in groups[g][1:]:
-                if b[1] != first_color:
-                    colorcross += 1
+                #check all the boxes' color values against the first
+                for b in groups[g][1:]:
+                    if b[1] != first_color:
+                        colorcross += 1
 
-            #check all but the last box's gap values
-            for b in groups[g][:-1]:
-                max_gap = max(max_gap, b[2])
+                #check all but the last box's gap values
+                for b in groups[g][:-1]:
+                    max_gap = max(max_gap, b[2])
 
-            if colorcross > 0:
-                crosscolor_groups += 1
+                if colorcross > 0:
+                    crosscolor_groups += 1
 
-            if max_gap > 0.25:
-                crossgap_groups += 1
+                if max_gap > 0.25:
+                    crossgap_groups += 1
 
 
 
